@@ -1,11 +1,22 @@
 import express from "express";
 import multer from "multer";
 import fs from "fs";
-import {PDFParse} from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 import { compareAnswers } from "../utils/pdfCompare.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname)
+  }
+})
+
+const upload = multer({ storage: storage });
 
 router.post(
   "/check",
@@ -16,10 +27,15 @@ router.post(
   ]),
   async (req, res) => {
     try {
-      const correctPdf = await new PDFParse(fs.readFileSync(req.files.correctAnswer[0].path));
-      const studentPdf = await new PDFParse(fs.readFileSync(req.files.studentAnswer[0].path));
+      // console.log("object", req.files)
+      const correctPdf = new PDFParse({ url: req.files.correctAnswer[0].path });
+      const studentPdf = new PDFParse({ url: req.files.studentAnswer[0].path });
 
-      const result = compareAnswers(correctPdf.text, studentPdf.text);
+      const resultCorrectPdf = await correctPdf.getText();
+      const resultStudentPdf = await studentPdf.getText();
+      // console.log("resultCorrectPdf",resultCorrectPdf)
+      // console.log("resultStudentPdf",resultStudentPdf)
+      const result = compareAnswers(resultCorrectPdf.text, resultStudentPdf.text);
 
       res.json({
         success: true,
