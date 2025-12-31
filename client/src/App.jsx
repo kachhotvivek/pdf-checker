@@ -17,7 +17,7 @@ function App() {
     formData.append("correctAnswer", files.correct);
     formData.append("studentAnswer", files.student);
 
-    const res = await axios.post("http://localhost:5000/api/check", formData);
+    const res = await axios.post("http://localhost:5001/api/check", formData);
     setResult(res.data);
   };
 

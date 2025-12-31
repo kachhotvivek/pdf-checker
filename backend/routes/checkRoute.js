@@ -16,8 +16,6 @@ router.post(
   ]),
   async (req, res) => {
     try {
-console.log("object",req)
-        return 
       const correctPdf = await new PDFParse(fs.readFileSync(req.files.correctAnswer[0].path));
       const studentPdf = await new PDFParse(fs.readFileSync(req.files.studentAnswer[0].path));
 
