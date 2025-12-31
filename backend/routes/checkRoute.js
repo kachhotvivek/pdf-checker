@@ -40,7 +40,7 @@ router.post(
       res.json({
         success: true,
         marks: result.marks,
-        wrongAnswers: result.wrongCount
+        wrongAnswers: result.wrongCount,
       });
 
     } catch (err) {
